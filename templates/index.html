@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI vs Real Image Detector</h1>
+        <p class="subtitle">Upload an image to analyze its authenticity</p>
+        
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="file-input-wrapper">
+                <input type="file" name="file" id="fileInput" accept="image/*" required>
+                <label for="fileInput" class="file-label" id="fileLabel">
+                    <span class="file-icon">📁</span>
+                    <span class="file-text" id="fileText">Choose an image</span>
+                </label>
+            </div>
+            <div id="imagePreview" class="image-preview" style="display: none;">
+                <img id="previewImg" src="" alt="Preview">
+                <button type="button" class="btn-remove" id="removeBtn">✕ Remove</button>
+            </div>
+            <button type="submit" class="btn-submit" id="submitBtn" disabled>Analyze Image</button>
+        </form>
+
+        {% if result %}
+            <div class="analyzed-image">
+                <img src="data:image/{{ image_format }};base64,{{ image_data }}" alt="Analyzed Image">
+            </div>
+            <div class="result-card">
+                <h2 class="result-title">{{ result }}</h2>
+                <p class="status-text">{{ status }}</p>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                </div>
+                <p class="confidence-text">Confidence: {{ confidence }}%</p>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileLabel = document.getElementById('fileLabel');
+        const fileText = document.getElementById('fileText');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const submitBtn = document.getElementById('submitBtn');
+        const removeBtn = document.getElementById('removeBtn');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImg.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    fileLabel.style.display = 'none';
+                    submitBtn.disabled = false;
+                    fileText.textContent = file.name;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            imagePreview.style.display = 'none';
+            fileLabel.style.display = 'flex';
+            fileText.textContent = 'Choose an image';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

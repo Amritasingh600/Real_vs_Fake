@@ -1,0 +1,11 @@
+# ML model weights
+*.pth
+*.pt
+*.ckpt
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual env
+.env
+venv/
